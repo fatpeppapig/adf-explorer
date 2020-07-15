@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QInputDialog, QMessageBox
 
 from adf import ADF
 
@@ -64,10 +64,29 @@ class App(QMainWindow):
         self.actions.disableFileActions()
 
     def makeDir(self):
-        print('Make Dir')
+        name, ok = QInputDialog.getText(
+            self, 'Make Directory', 'Please enter a new directory name:')
+
+        if name and ok:
+            self.adf.makeDir(name)
+
+    def relabel(self):
+        name, ok = QInputDialog.getText(
+            self, 'Relabel', 'Please enter a new volume name:')
+
+        if name and ok:
+            self.adf.relabel(name)
+            self.updateWindowTitle()
 
     def delete(self):
-        print('Delete')
+        msgbox = QMessageBox(QMessageBox.Question, 'Confirm delete',
+                             'Are you sure you want to delete %s' % self.browser.selectedItem())
+        msgbox.addButton(QMessageBox.Yes)
+        msgbox.addButton(QMessageBox.No)
+
+        result = msgbox.exec()
+        if result == QMessageBox.Yes:
+            self.adf.delete(self.browser.selectedItem())
 
     def extract(self):
         path, _ = QFileDialog.getSaveFileName(
@@ -87,7 +106,12 @@ class App(QMainWindow):
                 self.adf.insert(path)
 
     def createAdf(self):
-        print('Create')
+        path, _ = QFileDialog.getSaveFileName(
+            self, 'QFileDialog.getSaveFileName()', '', '', options=QFileDialog.Options())
+
+        if path:
+            self.adf.create(path)
+            self.startBrowsing()
 
     def openAdf(self):
         path, _ = QFileDialog.getOpenFileName(
@@ -95,11 +119,14 @@ class App(QMainWindow):
 
         if path:
             self.adf.open(path)
-            self.actions.enableAdfActions()
-            self.status.setText(self.adf.volumeInfo())
-            self.path.enable()
-            self.updateWindowTitle()
-            self.navigate('/')
+            self.startBrowsing()
+
+    def startBrowsing(self, path='/'):
+        self.actions.enableAdfActions()
+        self.status.setText(self.adf.volumeInfo())
+        self.path.enable()
+        self.updateWindowTitle()
+        self.navigate(path)
 
     def initUI(self):
         self.setFixedSize(self.width, self.height)

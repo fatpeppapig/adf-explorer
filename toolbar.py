@@ -1,5 +1,3 @@
-from PyQt5.QtWidgets import QAction, qApp
-from PyQt5.QtGui import QIcon
 from PyQt5 import QtCore
 
 
@@ -10,6 +8,7 @@ class Toolbar():
 
         self.toolbar.addAction(app.actions.createAction)
         self.toolbar.addAction(app.actions.openAction)
+        self.toolbar.addAction(app.actions.relabelAction)
         self.toolbar.addAction(app.actions.makeDirAction)
         self.toolbar.addAction(app.actions.parentAction)
         self.toolbar.addAction(app.actions.insertAction)

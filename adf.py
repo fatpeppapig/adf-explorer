@@ -1,5 +1,6 @@
 from amitools.fs.ADFSVolume import ADFSVolume
 from amitools.fs.blkdev.BlkDevFactory import BlkDevFactory
+from amitools.fs.FileName import FileName
 from amitools.fs.Imager import Imager
 from amitools.tools.xdftool import make_fsstr
 
@@ -14,7 +15,22 @@ class ADF():
         self.node = None
         self.path = None
 
+    def absolutePath(self, name):
+        return (self.path + '/' if self.path != '/' else '') + name
+
+    def create(self, path):
+        self.cleanUp()
+
+        self.blkdev = BlkDevFactory().create(path)
+        self.volume = ADFSVolume(self.blkdev)
+
+        name = os.path.basename(path)
+
+        self.volume.create(make_fsstr(name), dos_type=None)
+
     def open(self, path):
+        self.cleanUp()
+
         self.blkdev = BlkDevFactory().open(path)
         self.volume = ADFSVolume(self.blkdev)
         self.volume.open()
@@ -57,7 +73,7 @@ class ADF():
         return self.volume.get_info().__str__()
 
     def extract(self, name, output):
-        path = (self.path + '/' if self.path != '/' else '') + name
+        path = self.absolutePath(name)
         node = self.volume.get_path_name(make_fsstr(path))
 
         if node.is_file():
@@ -88,6 +104,21 @@ class ADF():
             img.pack_dir(input, node)
 
         self.navigate(self.path)
+
+    def makeDir(self, name):
+        path = self.absolutePath(name)
+
+        self.volume.create_dir(make_fsstr(path))
+        self.navigate(self.path)
+
+    def delete(self, name):
+        path = self.absolutePath(name)
+
+        self.volume.delete(make_fsstr(path), all=True)
+        self.navigate(self.path)
+
+    def relabel(self, name):
+        self.volume.relabel(make_fsstr(name))
 
     def cleanUp(self):
         if self.volume:

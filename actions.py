@@ -12,6 +12,10 @@ class Actions():
         self.openAction.setShortcut('Ctrl+O')
         self.openAction.triggered.connect(app.openAdf)
 
+        self.relabelAction = QAction(QIcon('icons/rename.png'), 'Relabel', app)
+        self.relabelAction.setShortcut('Relabel')
+        self.relabelAction.triggered.connect(app.relabel)
+
         self.parentAction = QAction(QIcon('icons/return.png'), 'Parent', app)
         self.parentAction.setShortcut('Backspace')
         self.parentAction.triggered.connect(app.parent)
@@ -41,14 +45,16 @@ class Actions():
         self.disableAdfActions()
 
     def disableAdfActions(self):
+        self.disableFileActions()
+
         self.parentAction.setDisabled(True)
+        self.relabelAction.setDisabled(True)
         self.makeDirAction.setDisabled(True)
-        self.extractAction.setDisabled(True)
         self.insertAction.setDisabled(True)
-        self.deleteAction.setDisabled(True)
 
     def enableAdfActions(self):
         self.parentAction.setDisabled(False)
+        self.relabelAction.setDisabled(False)
         self.makeDirAction.setDisabled(False)
         self.insertAction.setDisabled(False)
 
