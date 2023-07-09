@@ -20,6 +20,11 @@ class ADF():
 
     def create(self, path):
         self.cleanUp()
+        
+        #NOTE: Was crashing saying unrecognize file type is I entered blankdisk, I needed blankdisk.adf
+        # This code just checks and adds .adf to the end if missing.
+        if not path.endswith(".adf"):
+            path += ".adf"
 
         self.blkdev = BlkDevFactory().create(path)
         self.volume = ADFSVolume(self.blkdev)

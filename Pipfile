@@ -11,6 +11,9 @@ pyinstaller = "*"
 [packages]
 amitools = "*"
 pyqt5 = "*"
+lhafile = "*"
+pyqt5-qt5 = "*"
+pyqt5-sip = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.11.14"
